@@ -1,9 +1,9 @@
 import { useParams, useLocation, useMatch } from "react-router";
+import { TaskTable } from "../components/features/tasks/TaskTable";
 
 export const TasksPage = () => {
   const params = useParams();
   const location = useLocation();
-  console.log(location);
   const isNewTask = useMatch("/tasks/new");
   const isEditTask = useMatch("/tasks/:id/edit");
   const isTaskList = useMatch("/tasks");
@@ -15,6 +15,10 @@ export const TasksPage = () => {
     return <div>Edit Task</div>;
   }
   if (isTaskList) {
-    return <div>Tasks List</div>;
+    return (
+      <div>
+        <TaskTable userId={1} />
+      </div>
+    );
   }
 };
