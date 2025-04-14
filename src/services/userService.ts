@@ -8,7 +8,7 @@ import {
   UserResponse,
 } from "../types/user";
 import { getQueryString } from "../utils/utils";
-import { apiClient, post, put } from "./api";
+import { apiClient, del, post, put } from "./api";
 
 export const userService = {
   getById: (id: number): Promise<ApiResponse<User>> => {
@@ -29,5 +29,8 @@ export const userService = {
   },
   edit: (userId: number, dto: UserForUpdateDto): Promise<ApiResponse<User>> => {
     return put<User>(`user/${userId}`, dto);
+  },
+  delete: (userId: number) => {
+    return del<number>(`user/${userId}`);
   },
 };

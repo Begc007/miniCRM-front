@@ -7,6 +7,7 @@ import { UserForCreationDto, UserForUpdateDto } from "../types/user";
 import { UserAddForm } from "../components/features/users/UserAddForm";
 import { userService } from "../services/userService";
 import { UserEditForm } from "../components/features/users/UserEditForm";
+import { UserDeleteConfirmation } from "../components/features/users/UserDeleteConfirmation";
 
 export const UsersPage = () => {
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
@@ -14,6 +15,7 @@ export const UsersPage = () => {
   const navigate = useNavigate();
   const isNewUser = useMatch("/users/new");
   const isEditUser = useMatch("/users/:id/edit");
+  const isDeleteUser = useMatch("/users/:id/delete");
   const isUsersList = useMatch("/users");
   const { id } = useParams();
 
@@ -56,7 +58,6 @@ export const UsersPage = () => {
   };
 
   const handleUserSelected = (newIds: string[]) => {
-    console.log(newIds);
     setSelectedUserIds(newIds);
   };
 
@@ -65,13 +66,13 @@ export const UsersPage = () => {
   };
   const handleEdit = () => {
     if (selectedUserIds.length === 1) {
-      console.log("Editing user:", selectedUserIds[0]);
       navigate(`/users/${selectedUserIds[0]}/edit`);
     }
   };
   const handleDelete = () => {
-    console.log("delete");
-    console.log("Deleting users:", selectedUserIds);
+    if (selectedUserIds.length === 1) {
+      navigate(`/users/${selectedUserIds[0]}/delete`);
+    }
   };
 
   const handleTasks = () => {
@@ -113,6 +114,19 @@ export const UsersPage = () => {
     }
   };
 
+  const handleDeleteUser = async (userId: number) => {
+    try {
+      const resp = await userService.delete(userId);
+      if (resp.success) {
+        navigate("/users");
+      } else {
+        console.error("Failed to delete user:", resp.message); //TODO: create error component and show in the top
+      }
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
+  };
+
   if (isNewUser) {
     return (
       <div className="p-6">
@@ -125,7 +139,7 @@ export const UsersPage = () => {
     );
   }
   if (isEditUser) {
-    const userId = parseInt(id || "", 10);
+    const userId = parseInt(id || "");
     return (
       <div className="p-6">
         <h1 className="text-2xl font-bold mb-6">Редактирование пользователя</h1>
@@ -133,6 +147,19 @@ export const UsersPage = () => {
           id={userId}
           onSubmit={handleEditUser}
           isLoading={false} // true when API call is in progress
+        />
+      </div>
+    );
+  }
+  if (isDeleteUser) {
+    const userId = parseInt(id || "");
+    return (
+      <div className="p-6">
+        <h1 className="text-2xl font-bold mb-6">Удаление пользователя</h1>
+        <UserDeleteConfirmation
+          id={userId}
+          onConfirm={handleDeleteUser}
+          onCancel={() => navigate("/users")}
         />
       </div>
     );
