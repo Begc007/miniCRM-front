@@ -2,87 +2,99 @@ import { useEffect, useState } from "react";
 import { PaginationParams } from "../../../types/pagination";
 import { userService } from "../../../services/userService";
 import { TasksGroupedByUserResponse } from "../../../types/user";
-import { useForm } from "react-hook-form";
-import { UserTablePanel } from "./UserTablePanel";
 
 interface UserTableProps {
   paginationParams?: PaginationParams;
+  onPaginationChange?: (newParams: PaginationParams) => void;
+  onUserSelected: (newIds: string[]) => void;
 }
 
-export const UserTable = ({ paginationParams }: UserTableProps) => {
+export const UserTable = ({
+  paginationParams = {
+    pageNumber: 1,
+    pageSize: 10,
+    sortBy: "name",
+    sortDirection: "asc",
+  },
+  onPaginationChange,
+  onUserSelected,
+}: UserTableProps) => {
   const [tasksByUser, setTasksByUser] = useState<
     TasksGroupedByUserResponse[] | undefined
   >([]);
-  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    watch,
-  } = useForm();
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+  const [totalItems, setTotalItems] = useState<number>(0);
 
-  // Watch ONLY the users array for changes
-  const users = watch("users");
-  // Update selected users whenever users array changes
+  const [localPagination, setLocalPagination] =
+    useState<PaginationParams>(paginationParams);
+
   useEffect(() => {
-    if (users) {
-      const selected = users
-        .filter((user: any) => user?.selected)
-        .map((user: any) => user?.id)
-        .filter(Boolean); // Filter out any undefined IDs
-      setSelectedUsers(selected);
-    }
-  }, [users]);
+    setLocalPagination(paginationParams);
+  }, [paginationParams]);
+
+  useEffect(() => {
+    onUserSelected(selectedUserIds);
+  }, [selectedUserIds, onUserSelected]);
+
   useEffect(() => {
     const fetchData = async () => {
-      const resp = await userService.getTasksGroupedByUser(paginationParams);
+      const resp = await userService.getTasksGroupedByUser(localPagination);
       if (!resp.success) {
         console.error(`${resp.errorCode} ${resp.message}`); //TODO: make this error message. Create common component of error
       }
       setTasksByUser(resp.data);
+      if (resp.pagination?.totalCount) {
+        setTotalItems(resp.pagination.totalCount);
+      }
     };
     fetchData();
-  }, [paginationParams]);
+  }, [localPagination]);
 
-  const onSubmit = (data: unknown) => {
-    const data2 = data as TasksGroupedByUserResponse[];
-    //TODO: submit the changes to backend
-    console.log("Form submitted:", data2);
+  const handlePageChange = (newPage: number) => {
+    const newParams = { ...localPagination, pageNumber: newPage };
 
-    const formData = data as {
-      users: Array<{ selected?: boolean; id: string }>;
-    };
-    const selectedUsers = formData.users?.filter((user) => user.selected);
+    if (onPaginationChange) {
+      onPaginationChange(newParams);
+    } else {
+      setLocalPagination(newParams);
+    }
+  };
 
-    if (selectedUsers && selectedUsers.length > 0) {
-      console.log(
-        "Selected user IDs:",
-        selectedUsers.map((user) => user.id)
-      );
-      console.log("Number of selected rows:", selectedUsers.length);
+  const handlePageSizeChange = (newSize: number) => {
+    const newParams = { ...localPagination, pageSize: newSize, pageNumber: 1 }; // Reset to page 1
+
+    if (onPaginationChange) {
+      onPaginationChange(newParams);
+    } else {
+      setLocalPagination(newParams);
+    }
+  };
+
+  const handleCheckboxChange = (userId: string, isChecked: boolean) => {
+    if (isChecked) {
+      setSelectedUserIds((prev) => [...prev, userId]);
+    } else {
+      setSelectedUserIds((prev) => prev.filter((id) => id !== userId));
+    }
+  };
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    if (selectedUserIds.length > 0) {
+      console.log("Selected user IDs:", selectedUserIds);
+      console.log("Number of selected rows:", selectedUserIds.length);
     } else {
       console.log("No users selected");
     }
   };
 
-  const handleAdd = () => {};
-  const handleEdit = () => {};
-  const handleDelete = () => {};
-  const handleSearch = () => {};
+  const totalPages = Math.ceil(totalItems / localPagination.pageSize);
 
   return (
     <>
-      <UserTablePanel
-        EditDisabled={selectedUsers.length !== 1}
-        DeleteDisabled={selectedUsers.length === 0}
-        TasksDisabled={selectedUsers.length !== 1}
-        onAdd={handleAdd}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onSearch={handleSearch}
-      />
       <div className="w-full">
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit}>
           <table className="min-w-full bg-white border border-gray-200">
             <thead>
               <tr className="bg-gray-100">
@@ -91,9 +103,30 @@ export const UserTable = ({ paginationParams }: UserTableProps) => {
                   Имя пользователя
                 </th>
                 <th className="py-2 px-4 border-b text-left">ФИО</th>
-                <th className="py-2 px-4 border-b text-left">Должность</th>
-                <th className="py-2 px-4 border-b text-left">Задач</th>
-                <th className="py-2 px-4 border-b text-left">Выполнено</th>
+                <th className="py-2 px-4 border-b text-left">
+                  Должность{" "}
+                  {localPagination.sortBy === "position"
+                    ? localPagination.sortDirection === "asc"
+                      ? "↑"
+                      : "↓"
+                    : ""}
+                </th>
+                <th className="py-2 px-4 border-b text-left">
+                  Задач{" "}
+                  {localPagination.sortBy === "taskItemCount"
+                    ? localPagination.sortDirection === "asc"
+                      ? "↑"
+                      : "↓"
+                    : ""}
+                </th>
+                <th className="py-2 px-4 border-b text-left">
+                  Выполнено{" "}
+                  {localPagination.sortBy === "completedPercent"
+                    ? localPagination.sortDirection === "asc"
+                      ? "↑"
+                      : "↓"
+                    : ""}
+                </th>
                 <th className="py-2 px-4 border-b text-left">Выбрать</th>
               </tr>
             </thead>
@@ -112,13 +145,16 @@ export const UserTable = ({ paginationParams }: UserTableProps) => {
                         <input
                           type="checkbox"
                           id={`select-user-${index}`}
-                          {...register(`users[${index}].selected`)}
+                          checked={selectedUserIds.includes(
+                            user.userId.toString()
+                          )}
+                          onChange={(e) =>
+                            handleCheckboxChange(
+                              user.userId.toString(),
+                              e.target.checked
+                            )
+                          }
                           className="mr-2"
-                        />
-                        <input
-                          type="hidden"
-                          {...register(`users[${index}].id`)}
-                          defaultValue={user.userId}
                         />
                         <label htmlFor={`select-user-${index}`}>Выбрать</label>
                       </div>
@@ -147,6 +183,49 @@ export const UserTable = ({ paginationParams }: UserTableProps) => {
             </button>
           </div>
         </form>
+      </div>
+      <div className="mt-4 flex items-center justify-between">
+        <div>
+          <select
+            value={localPagination.pageSize}
+            onChange={(e) => handlePageSizeChange(Number(e.target.value))}
+            className="border rounded px-2 py-1"
+          >
+            <option value={2}>2 строк</option>
+            <option value={10}>10 строк</option>
+            <option value={25}>25 строк</option>
+            <option value={50}>50 строк</option>
+          </select>
+        </div>
+
+        <div className="flex">
+          <button
+            onClick={() =>
+              handlePageChange(Math.max(1, localPagination.pageNumber - 1))
+            }
+            disabled={localPagination.pageNumber <= 1}
+            className="px-3 py-1 border rounded mx-1"
+          >
+            Назад
+          </button>
+
+          {/* Page number display */}
+          <span className="px-3 py-1">
+            Страница {localPagination.pageNumber} из {totalPages}
+          </span>
+
+          <button
+            onClick={() =>
+              handlePageChange(
+                Math.min(totalPages, localPagination.pageNumber + 1)
+              )
+            }
+            disabled={localPagination.pageNumber >= totalPages}
+            className="px-3 py-1 border rounded mx-1"
+          >
+            Вперед
+          </button>
+        </div>
       </div>
     </>
   );

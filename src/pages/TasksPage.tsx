@@ -1,9 +1,7 @@
-import { useParams, useLocation, useMatch } from "react-router";
+import { useMatch } from "react-router";
 import { TaskTable } from "../components/features/tasks/TaskTable";
 
 export const TasksPage = () => {
-  const params = useParams();
-  const location = useLocation();
   const isNewTask = useMatch("/tasks/new");
   const isEditTask = useMatch("/tasks/:id/edit");
   const isTaskList = useMatch("/tasks");

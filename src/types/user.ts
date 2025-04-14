@@ -1,10 +1,18 @@
 import { PaginationMetadata } from "./pagination";
 
 export interface User {
-  Id: number;
-  Name: string;
-  FIO?: string;
-  Position?: string;
+  id: number;
+  name: string;
+  fio?: string;
+  password: string;
+  position?: string;
+}
+
+export interface UserForCreationDto {
+  name: string;
+  fio?: string;
+  password: string;
+  position: string;
 }
 
 export interface UserResponse {
@@ -19,4 +27,12 @@ export interface TasksGroupedByUserResponse {
   position: string;
   taskItemCount: number;
   completedPercent: number;
+}
+
+export interface UserForUpdateDto {
+  id: number;
+  name: string;
+  password: string;
+  fio: string;
+  position: string;
 }

@@ -11,7 +11,6 @@ const axiosInstance: AxiosInstance = axios.create({
   },
 });
 
-// The API client
 export const apiClient = async <T>(
   endpoint: string,
   options: AxiosRequestConfig = {}

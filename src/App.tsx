@@ -26,6 +26,8 @@ function App() {
           <Route path="/tasks/:id/edit" element={<TasksPage />} />
           <Route path="/reports" element={<ReportsPage />} />
           <Route path="/users" element={<UsersPage />} />
+          <Route path="/users/new" element={<UsersPage />} />
+          <Route path="/users/:id/edit" element={<UsersPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
