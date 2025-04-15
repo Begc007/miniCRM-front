@@ -40,10 +40,9 @@ export const TaskAddForm = ({
       percent: 0,
       startDate: new Date().toISOString().split("T")[0],
       expiredAt: new Date().toISOString().split("T")[0],
-      completedAt: new Date().toISOString().split("T")[0],
+      completedAt: "",
     },
   });
-  console.log(userId);
 
   const handleFormSubmit = async (data: TaskFormValues) => {
     try {
@@ -52,7 +51,10 @@ export const TaskAddForm = ({
         ...data,
         startDate: new Date(data.startDate),
         expiredAt: new Date(data.expiredAt),
-        completedAt: data.completedAt ? new Date(data.completedAt) : new Date(),
+        completedAt:
+          data.completedAt && data.completedAt.trim() !== ""
+            ? new Date(data.completedAt)
+            : null,
         userId: userId,
       };
 

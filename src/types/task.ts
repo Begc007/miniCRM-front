@@ -18,7 +18,7 @@ export interface TaskItemForCreationDto {
   percent: number;
   startDate: Date;
   expiredAt: Date;
-  completedAt: Date;
+  completedAt: Date | null;
   userId: number;
 }
 

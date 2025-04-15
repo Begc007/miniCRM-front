@@ -31,7 +31,7 @@ export const TasksPage = () => {
 
     const pageNumber = parseInt(queryParams.get("pageNumber") || "1");
     const pageSize = parseInt(queryParams.get("pageSize") || "10");
-    const sortBy = queryParams.get("sort") || "name";
+    const sortBy = queryParams.get("sortBy") || "name";
     const sortDirection =
       (queryParams.get("sortDirection") as "asc" | "desc") || "asc";
 
@@ -41,7 +41,7 @@ export const TasksPage = () => {
       sortBy,
       sortDirection,
     });
-  }, []);
+  }, [location.search]);
 
   const handlePaginationChange = (newParams: PaginationParams) => {
     const queryParams = new URLSearchParams();
@@ -76,7 +76,7 @@ export const TasksPage = () => {
     try {
       const resp = await taskService.create(data);
       if (resp.success) {
-        navigate(`tasks/${userId}`);
+        navigate(`/tasks/${userId}`);
       } else {
         console.error("Failed to create task:", resp.message);
       }
