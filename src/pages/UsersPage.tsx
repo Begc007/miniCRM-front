@@ -76,8 +76,9 @@ export const UsersPage = () => {
   };
 
   const handleTasks = () => {
-    console.log("delete");
-    console.log("Tasks users:", selectedUserIds);
+    if (selectedUserIds.length === 1) {
+      navigate(`/tasks/${selectedUserIds[0]}`);
+    }
   };
 
   const handleSearch = () => {
