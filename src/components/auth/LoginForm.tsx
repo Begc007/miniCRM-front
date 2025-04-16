@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { authService, LoginRequest } from "../../services/authService";
+import { authService } from "../../services/authService";
 import { useNavigate } from "react-router";
+import { LoginRequest } from "../../types/auth";
 
 export const LoginForm: React.FC = () => {
   const [credentials, setCredentials] = useState<LoginRequest>({

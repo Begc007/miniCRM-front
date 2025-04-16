@@ -17,7 +17,6 @@ const ProtectedRoute = () => {
   const isAuthenticated = authService.isAuthenticated();
   const location = useLocation();
 
-  // If not authenticated, redirect to login page
   if (!isAuthenticated) {
     return <Navigate to="/login" replace state={{ from: location }} />;
   }
@@ -32,7 +31,6 @@ const ProtectedRoute = () => {
 const AuthRoute = () => {
   const isAuthenticated = authService.isAuthenticated();
 
-  // If already authenticated, redirect to tasks page
   if (isAuthenticated) {
     return <Navigate to="/tasks" replace />;
   }

@@ -29,7 +29,6 @@ export const authService = {
   logout: (): void => {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_INFO_KEY);
-    // Redirect to login
     window.location.href = "/login";
   },
 
