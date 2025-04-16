@@ -209,7 +209,6 @@ export const UserTable = ({
             Назад
           </button>
 
-          {/* Page number display */}
           <span className="px-3 py-1">
             Страница {localPagination.pageNumber} из {totalPages}
           </span>

@@ -1,4 +1,5 @@
 import { PaginationMetadata } from "./pagination";
+import { User } from "./user";
 
 export interface TaskItem {
   name: string;
@@ -25,5 +26,15 @@ export interface TaskItemForCreationDto {
 
 export interface TaskItemResponse {
   data: TaskItem[];
+  pagination: PaginationMetadata;
+}
+
+export interface ExpiredTaskItem extends TaskItem {
+  expiredDays: number;
+  user: User;
+}
+
+export interface ExpiredTaskItemResponse {
+  data: ExpiredTaskItem[];
   pagination: PaginationMetadata;
 }
