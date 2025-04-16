@@ -18,7 +18,7 @@ export const UsersPage = () => {
   const isDeleteUser = useMatch("/users/:id/delete");
   const isUsersList = useMatch("/users");
   const { id } = useParams();
-  const [fio, setFio] = useState(null);
+  const [fio, setFio] = useState();
 
   const defaultPagination: PaginationParams = {
     pageNumber: 1,
@@ -80,6 +80,10 @@ export const UsersPage = () => {
     if (selectedUserIds.length === 1) {
       navigate(`/tasks/${selectedUserIds[0]}`);
     }
+  };
+
+  const handleReport = () => {
+    navigate(`/reports/expired-tasks`);
   };
 
   const handleSearch = (text: string) => {
@@ -174,6 +178,7 @@ export const UsersPage = () => {
           onDelete={handleDelete}
           onSearch={handleSearch}
           onTasks={handleTasks}
+          onReport={handleReport}
         />
         <UserTable
           paginationParams={paginationParams}

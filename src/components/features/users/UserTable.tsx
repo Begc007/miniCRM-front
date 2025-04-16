@@ -7,7 +7,7 @@ interface UserTableProps {
   paginationParams?: PaginationParams;
   onPaginationChange?: (newParams: PaginationParams) => void;
   onUserSelected: (newIds: string[]) => void;
-  fio: string | null;
+  fio?: string;
 }
 
 export const UserTable = ({
