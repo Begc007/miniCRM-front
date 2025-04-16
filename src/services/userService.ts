@@ -19,10 +19,13 @@ export const userService = {
     return apiClient<UserResponse>(`user${queryString}`);
   },
   getTasksGroupedByUser: (
+    fio: string | null,
     params?: PaginationParams
   ): Promise<ApiResponse<TasksGroupedByUserResponse[]>> => {
     const queryString = getQueryString(params);
-    return apiClient<TasksGroupedByUserResponse[]>(`user${queryString}`);
+    return apiClient<TasksGroupedByUserResponse[]>(
+      `user${queryString}&fio=${fio}`
+    );
   },
   create: (dto: UserForCreationDto): Promise<ApiResponse<User>> => {
     return post<User>("user", dto);

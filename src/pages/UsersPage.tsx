@@ -18,6 +18,7 @@ export const UsersPage = () => {
   const isDeleteUser = useMatch("/users/:id/delete");
   const isUsersList = useMatch("/users");
   const { id } = useParams();
+  const [fio, setFio] = useState(null);
 
   const defaultPagination: PaginationParams = {
     pageNumber: 1,
@@ -81,12 +82,8 @@ export const UsersPage = () => {
     }
   };
 
-  const handleSearch = () => {
-    console.log("search");
-  };
-
-  const handleReport = () => {
-    console.log("report");
+  const handleSearch = (text: string) => {
+    setFio(text);
   };
 
   const handleCreateUser = async (userData: UserForCreationDto) => {
@@ -177,12 +174,12 @@ export const UsersPage = () => {
           onDelete={handleDelete}
           onSearch={handleSearch}
           onTasks={handleTasks}
-          onReport={handleReport}
         />
         <UserTable
           paginationParams={paginationParams}
           onPaginationChange={handlePaginationChange}
           onUserSelected={handleUserSelected}
+          fio={fio}
         />
       </div>
     );

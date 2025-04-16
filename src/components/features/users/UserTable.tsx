@@ -7,6 +7,7 @@ interface UserTableProps {
   paginationParams?: PaginationParams;
   onPaginationChange?: (newParams: PaginationParams) => void;
   onUserSelected: (newIds: string[]) => void;
+  fio: string | null;
 }
 
 export const UserTable = ({
@@ -18,6 +19,7 @@ export const UserTable = ({
   },
   onPaginationChange,
   onUserSelected,
+  fio,
 }: UserTableProps) => {
   const [tasksByUser, setTasksByUser] = useState<
     TasksGroupedByUserResponse[] | undefined
@@ -38,7 +40,10 @@ export const UserTable = ({
 
   useEffect(() => {
     const fetchData = async () => {
-      const resp = await userService.getTasksGroupedByUser(localPagination);
+      const resp = await userService.getTasksGroupedByUser(
+        fio,
+        localPagination
+      );
       if (!resp.success) {
         console.error(`${resp.errorCode} ${resp.message}`); //TODO: make this error message. Create common component of error
       }
@@ -48,7 +53,7 @@ export const UserTable = ({
       }
     };
     fetchData();
-  }, [localPagination]);
+  }, [localPagination, fio]);
 
   const handlePageChange = (newPage: number) => {
     const newParams = { ...localPagination, pageNumber: newPage };
@@ -78,23 +83,12 @@ export const UserTable = ({
     }
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-
-    if (selectedUserIds.length > 0) {
-      console.log("Selected user IDs:", selectedUserIds);
-      console.log("Number of selected rows:", selectedUserIds.length);
-    } else {
-      console.log("No users selected");
-    }
-  };
-
   const totalPages = Math.ceil(totalItems / localPagination.pageSize);
 
   return (
     <>
       <div className="w-full">
-        <form onSubmit={handleSubmit}>
+        <form>
           <table className="min-w-full bg-white border border-gray-200">
             <thead>
               <tr className="bg-gray-100">
@@ -173,15 +167,6 @@ export const UserTable = ({
               )}
             </tbody>
           </table>
-
-          <div className="mt-4 flex justify-end">
-            <button
-              type="submit"
-              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-            >
-              Сохранить
-            </button>
-          </div>
         </form>
       </div>
       <div className="mt-4 flex items-center justify-between">
