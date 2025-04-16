@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { authService } from "../../services/authService";
 
 export const Header = () => {
   return (
@@ -31,6 +32,12 @@ export const Header = () => {
             >
               Отчет
             </Link>
+            <button
+              onClick={() => authService.logout()}
+              className="text-gray-600 hover:text-gray-900 transition"
+            >
+              Выйти
+            </button>
           </nav>
         </div>
       </div>

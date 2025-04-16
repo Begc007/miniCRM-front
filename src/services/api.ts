@@ -11,6 +11,37 @@ const axiosInstance: AxiosInstance = axios.create({
   },
 });
 
+// Request interceptor to add JWT token to all requests
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      config.headers = config.headers || {};
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Response interceptor to handle 401 Unauthorized responses
+axiosInstance.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      // Unauthorized, clear token and redirect to login
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_info');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const apiClient = async <T>(
   endpoint: string,
   options: AxiosRequestConfig = {}
