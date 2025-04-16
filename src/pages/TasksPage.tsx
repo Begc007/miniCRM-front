@@ -4,8 +4,10 @@ import { TaskTablePanel } from "../components/features/tasks/TaskTablePanel";
 import { useEffect, useState } from "react";
 import { PaginationParams } from "../types/pagination";
 import { TaskAddForm } from "../components/features/tasks/TaskAddForm";
-import { TaskItemForCreationDto } from "../types/task";
+import { TaskItem, TaskItemForCreationDto } from "../types/task";
 import { taskService } from "../services/taskService";
+import { TaskEditForm } from "../components/features/tasks/TaskEditForm";
+import { TaskDeleteConfirmation } from "../components/features/tasks/TaskDeleteConfirmation";
 
 export const TasksPage = () => {
   const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([]);
@@ -13,9 +15,9 @@ export const TasksPage = () => {
   const navigate = useNavigate();
   const isNewTask = useMatch("/tasks/:userId/new");
   const isEditTask = useMatch("/tasks/:id/edit");
-  const isTaskDelete = useMatch("/tasks/:id/delete");
+  const isDeleteTask = useMatch("/tasks/:id/delete");
   const isTaskList = useMatch("/tasks/:userId");
-  const { userId } = useParams();
+  const { userId, id } = useParams();
 
   const defaultPagination: PaginationParams = {
     pageNumber: 1,
@@ -85,10 +87,42 @@ export const TasksPage = () => {
     }
   };
 
+  const getUserIdByTaskId = async (taskId: number) => {
+    const taskResponse = await taskService.getById(taskId);
+    return taskResponse.success ? taskResponse.data?.userId : null;
+  };
+
+  const handleTaskDelete = async (id: number) => {
+    try {
+      const resp = await taskService.delete(id);
+      if (resp.success) {
+        navigate(`/tasks/${await getUserIdByTaskId(id)}`);
+      } else {
+        console.error("Failed to delete task:", resp.message);
+      }
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
+  };
+  const handleTaskUpdate = async (taskId: number, taskData: TaskItem) => {
+    try {
+      const resp = await taskService.update(taskId, taskData);
+
+      if (resp.success) {
+        navigate(`/tasks/${await getUserIdByTaskId(taskId)}`);
+      } else {
+        console.error("Failed to update task:", resp.message); //TODO: make this error component
+      }
+    } catch (error) {
+      console.error("Error updating task:", error);
+    }
+  };
+
+  //routing
   if (isNewTask) {
     return (
       <div className="p-6">
-        <h1 className="text-2xl font-bold mb-6">Новый пользователь</h1>
+        <h1 className="text-2xl font-bold mb-6">Новая задача</h1>
         <TaskAddForm
           userId={userId}
           onCreate={handleTaskCreate}
@@ -96,6 +130,34 @@ export const TasksPage = () => {
             navigate(`tasks/${userId}`);
           }}
           isLoading={false}
+        />
+      </div>
+    );
+  }
+
+  if (isEditTask) {
+    const taskId = parseInt(id);
+    return (
+      <div className="p-6">
+        <h1 className="text-2xl font-bold mb-6">Редактирование задачи</h1>
+        <TaskEditForm
+          taskId={taskId} //TODO: resolve later
+          onCancel={() => navigate(`/tasks/${userId}`)}
+          onUpdate={handleTaskUpdate}
+        />
+      </div>
+    );
+  }
+
+  if (isDeleteTask) {
+    const taskId = parseInt(id);
+    return (
+      <div className="p-6">
+        <h1 className="text-2xl font-bold mb-6">Редактирование задачи</h1>
+        <TaskDeleteConfirmation
+          id={taskId} //TODO: resolve later
+          onConfirm={handleTaskDelete}
+          onCancel={() => navigate(`/users`)} //TODO: fix to return back to userId not all users
         />
       </div>
     );

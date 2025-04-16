@@ -6,9 +6,12 @@ import {
   TaskItemResponse,
 } from "../types/task";
 import { getQueryString } from "../utils/utils";
-import { apiClient, post } from "./api";
+import { apiClient, del, post, put } from "./api";
 
 export const taskService = {
+  getById: (id: number): Promise<ApiResponse<TaskItem>> => {
+    return apiClient<TaskItem>(`taskItem/${id}`);
+  },
   getAll: (
     params?: PaginationParams
   ): Promise<ApiResponse<TaskItemResponse>> => {
@@ -24,5 +27,11 @@ export const taskService = {
   },
   create: (data: TaskItemForCreationDto): Promise<ApiResponse<TaskItem>> => {
     return post<TaskItem>("taskItem", data);
+  },
+  delete: (id: number) => {
+    return del<number>(`taskItem/${id}`);
+  },
+  update: (id: number, data: TaskItem): Promise<ApiResponse<TaskItem>> => {
+    return put<TaskItem>(`taskItem/${id}`, data);
   },
 };

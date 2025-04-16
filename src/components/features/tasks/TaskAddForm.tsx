@@ -6,6 +6,10 @@ import { TaskItemForCreationDto } from "../../../types/task";
 const taskSchema = z.object({
   name: z.string().min(1, "Обязательно"),
   details: z.string().optional(),
+  complexity: z.coerce
+    .number()
+    .min(1, "Обязательно")
+    .max(10, "Сложность должна быть от 1 до 10"),
   percent: z.coerce.number().min(0).max(100, "Процент должен быть от 0 до 100"),
   startDate: z.string().min(1, "Обязательно"),
   expiredAt: z.string().min(1, "Обязательно"),
@@ -37,6 +41,7 @@ export const TaskAddForm = ({
     defaultValues: {
       name: "",
       details: "",
+      complexity: 1,
       percent: 0,
       startDate: new Date().toISOString().split("T")[0],
       expiredAt: new Date().toISOString().split("T")[0],
@@ -46,7 +51,6 @@ export const TaskAddForm = ({
 
   const handleFormSubmit = async (data: TaskFormValues) => {
     try {
-      // Transform form data to match TaskItemForCreationDto
       const taskData: TaskItemForCreationDto = {
         ...data,
         startDate: new Date(data.startDate),
@@ -105,6 +109,30 @@ export const TaskAddForm = ({
             rows={3}
             {...register("details")}
           />
+        </div>
+
+        <div>
+          <label
+            htmlFor="percent"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Сложность <span className="text-red-500">*</span>
+          </label>
+          <input
+            id="percent"
+            type="number"
+            min="1"
+            max="10"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.complexity ? "border-red-500" : "border-gray-300"
+            }`}
+            {...register("complexity", { valueAsNumber: true })}
+          />
+          {errors.complexity && (
+            <p className="mt-1 text-sm text-red-600">
+              {errors.complexity.message}
+            </p>
+          )}
         </div>
 
         <div>

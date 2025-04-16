@@ -56,8 +56,20 @@ export const apiClient = async <T>(
 export const get = <T>(endpoint: string, params?: object) =>
   apiClient<T>(endpoint, { method: "GET", params });
 
-export const post = <T>(endpoint: string, data?: any) =>
-  apiClient<T>(endpoint, { method: "POST", data });
+export const post = <T>(endpoint: string, data?: any) => {
+  const config: AxiosRequestConfig = { method: "POST" };
+  if (data) {
+    config.data = data;
+
+    if (data instanceof FormData) {
+      config.headers = {
+        "Content-Type": undefined,
+      };
+    }
+  }
+
+  return apiClient<T>(endpoint, config);
+};
 
 export const put = <T>(endpoint: string, data?: any) =>
   apiClient<T>(endpoint, { method: "PUT", data });

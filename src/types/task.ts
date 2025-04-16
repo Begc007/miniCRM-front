@@ -7,7 +7,7 @@ export interface TaskItem {
   startDate: Date;
   expiredAt: Date;
   completedAt: Date;
-  targetDate: Date;
+  complexity: number;
   userId: number;
   id: number;
 }
@@ -19,6 +19,7 @@ export interface TaskItemForCreationDto {
   startDate: Date;
   expiredAt: Date;
   completedAt: Date | null;
+  complexity: number;
   userId: number;
 }
 
