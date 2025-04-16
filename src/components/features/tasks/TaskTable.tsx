@@ -45,9 +45,7 @@ export const TaskTable = ({
       const resp = await taskService.getTasksByUserId(userId, paginationParams);
       if (resp.success) {
         setTaskList(resp.data); //TODO: resolve this TS bug later
-        if (resp.pagination?.totalCount) {
-          setTotalItems(resp.pagination.totalCount);
-        }
+        setTotalItems(resp.pagination.totalCount);
       } else {
         console.error("Error fetching data:", resp.message);
       }

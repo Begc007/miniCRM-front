@@ -27,16 +27,16 @@ export const ExpiredTasksTable = ({
       const resp = await reportService.getExpiredTasks(paginationParams);
       if (resp.success) {
         setData(resp.data);
+        setTotalItems(resp.pagination.totalCount);
       } else {
         console.error("Failed fetching report", resp.message);
       }
     };
     fetchData();
-  }, [localPagination]);
+  }, [localPagination, paginationParams]);
 
   const handlePageChange = (newPage: number) => {
     const newParams = { ...localPagination, pageNumber: newPage };
-
     if (onPaginationChange) {
       onPaginationChange(newParams);
     } else {

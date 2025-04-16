@@ -1,9 +1,6 @@
-import { useState } from "react";
 import { Link } from "react-router";
 
 export const Header = () => {
-  //   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   return (
     <header className="bg-white shadow-md">
       <div className="container mx-auto px-4">
@@ -29,7 +26,7 @@ export const Header = () => {
               Сотрудники
             </Link>
             <Link
-              to="/reports"
+              to="/reports/expired-tasks"
               className="text-gray-600 hover:text-gray-900 transition"
             >
               Отчет

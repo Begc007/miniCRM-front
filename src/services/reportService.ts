@@ -10,7 +10,7 @@ export const reportService = {
   ): Promise<ApiResponse<ExpiredTaskItemResponse>> => {
     const queryString = getQueryString(params);
     return apiClient<ExpiredTaskItemResponse>(
-      `report/expired-tasks?${queryString}`
+      `report/expired-tasks${queryString}`
     );
   },
 };

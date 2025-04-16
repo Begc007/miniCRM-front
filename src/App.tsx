@@ -29,7 +29,7 @@ function App() {
           <Route path="/tasks/:userId" element={<TasksPage />} />
 
           {/* reports */}
-          <Route path="/reports" element={<ReportsPage />} />
+          <Route path="/reports/expired-tasks" element={<ReportsPage />} />
           {/* users */}
           <Route path="/users" element={<UsersPage />} />
           <Route path="/users/new" element={<UsersPage />} />
