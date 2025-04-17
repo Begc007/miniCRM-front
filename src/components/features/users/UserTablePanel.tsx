@@ -47,7 +47,11 @@ export const UserTablePanel = ({
 
         <button
           onClick={onEdit}
-          className="px-4 py-1.5 bg-blue-100 border border-blue-500 text-blue-700 rounded hover:bg-blue-200 transition-colors"
+          className={`px-4 py-1.5 rounded transition-colors ${
+            EditDisabled
+              ? `bg-gray-100 border border-gray-300 text-gray-400 cursor-not-allowed`
+              : `bg-blue-100 border border-blue-500 text-blue-700  hover:bg-blue-200 `
+          } `}
           disabled={EditDisabled}
         >
           Редактировать
@@ -55,7 +59,11 @@ export const UserTablePanel = ({
 
         <button
           onClick={onDelete}
-          className="px-4 py-1.5 bg-red-100 border border-red-500 text-red-700 rounded hover:bg-red-200 transition-colors"
+          className={`px-4 py-1.5 rounded transition-colors ${
+            DeleteDisabled
+              ? `bg-gray-100 border border-gray-300 text-gray-400 cursor-not-allowed`
+              : `bg-red-100 border border-red-500 text-red-700  hover:bg-red-200`
+          } `}
           disabled={DeleteDisabled}
         >
           Удалить
@@ -66,7 +74,11 @@ export const UserTablePanel = ({
       <div className="flex space-x-2 ml-4">
         <button
           onClick={onTasks}
-          className="px-4 py-1.5 bg-purple-100 border border-purple-500 text-purple-700 rounded hover:bg-purple-200 transition-colors"
+          className={`px-4 py-1.5 rounded transition-colors ${
+            TasksDisabled
+              ? `bg-gray-100 border border-gray-300 text-gray-400 cursor-not-allowed`
+              : `bg-purple-100 border border-purple-500 text-purple-700  hover:bg-purple-200`
+          } `}
           disabled={TasksDisabled}
         >
           Задачи
