@@ -51,8 +51,8 @@ function App() {
           <Route path="/" element={<Navigate to="/tasks" replace />} />
           <Route path="/tasks" element={<TasksPage />} />
           <Route path="/tasks/:userId/new" element={<TasksPage />} />
-          <Route path="/tasks/:id/edit" element={<TasksPage />} />
-          <Route path="/tasks/:id/delete" element={<TasksPage />} />
+          <Route path="/tasks/:userId/:id/edit" element={<TasksPage />} />
+          <Route path="/tasks/:userId/:id/delete" element={<TasksPage />} />
           <Route path="/tasks/:userId" element={<TasksPage />} />
 
           {/* reports */}

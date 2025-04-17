@@ -8,14 +8,15 @@ import { TaskItem, TaskItemForCreationDto } from "../types/task";
 import { taskService } from "../services/taskService";
 import { TaskEditForm } from "../components/features/tasks/TaskEditForm";
 import { TaskDeleteConfirmation } from "../components/features/tasks/TaskDeleteConfirmation";
+import { userService } from "../services/userService";
 
 export const TasksPage = () => {
   const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([]);
-
+  const [fetchedUserId, setFetchedUserId] = useState<number>();
   const navigate = useNavigate();
   const isNewTask = useMatch("/tasks/:userId/new");
-  const isEditTask = useMatch("/tasks/:id/edit");
-  const isDeleteTask = useMatch("/tasks/:id/delete");
+  const isEditTask = useMatch("/tasks/:userId/:id/edit");
+  const isDeleteTask = useMatch("/tasks/:userId/:id/delete");
   const isTaskList = useMatch("/tasks/:userId");
   const { userId, id } = useParams();
 
@@ -27,6 +28,18 @@ export const TasksPage = () => {
   };
   const [paginationParams, setPaginationParams] =
     useState<PaginationParams>(defaultPagination);
+
+  // useEffect(() => {
+  //   console.log(userId, id);
+  //   if (!userId) return;
+  //   const fetchData = async () => {
+  //     const resp = await getUserIdByTaskId(parseInt(id));
+  //     console.log(resp);
+  //     if (!resp) return;
+  //     setFetchedUserId(resp);
+  //   };
+  //   fetchData();
+  // }, [fetchedUserId, id, userId]);
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
@@ -65,12 +78,12 @@ export const TasksPage = () => {
   };
   const handleEdit = () => {
     if (selectedTaskIds.length === 1) {
-      navigate(`/tasks/${selectedTaskIds[0]}/edit`);
+      navigate(`/tasks/${userId}/${selectedTaskIds[0]}/edit`);
     }
   };
   const handleDelete = () => {
     if (selectedTaskIds.length === 1) {
-      navigate(`/tasks/${selectedTaskIds[0]}/delete`);
+      navigate(`/tasks/${userId}/${selectedTaskIds[0]}/delete`);
     }
   };
 
@@ -96,7 +109,7 @@ export const TasksPage = () => {
     try {
       const resp = await taskService.delete(id);
       if (resp.success) {
-        navigate(`/tasks/${await getUserIdByTaskId(id)}`);
+        navigate(`/tasks/${userId}`);
       } else {
         console.error("Failed to delete task:", resp.message);
       }
@@ -127,7 +140,7 @@ export const TasksPage = () => {
           userId={userId}
           onCreate={handleTaskCreate}
           onCancel={() => {
-            navigate(`tasks/${userId}`);
+            navigate(`/tasks/${userId}`);
           }}
           isLoading={false}
         />
@@ -141,7 +154,7 @@ export const TasksPage = () => {
       <div className="p-6">
         <h1 className="text-2xl font-bold mb-6">Редактирование задачи</h1>
         <TaskEditForm
-          taskId={taskId} //TODO: resolve later
+          taskId={taskId}
           onCancel={() => navigate(`/tasks/${userId}`)}
           onUpdate={handleTaskUpdate}
         />
@@ -157,7 +170,7 @@ export const TasksPage = () => {
         <TaskDeleteConfirmation
           id={taskId} //TODO: resolve later
           onConfirm={handleTaskDelete}
-          onCancel={() => navigate(`/users`)} //TODO: fix to return back to userId not all users
+          onCancel={() => navigate(`/tasks/${userId}`)}
         />
       </div>
     );

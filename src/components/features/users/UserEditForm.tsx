@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { User, UserForUpdateDto } from "../../../types/user";
 import { userService } from "../../../services/userService";
+import { useNavigate } from "react-router";
 
 const userEditSchema = z.object({
   name: z.string().min(1, "Обязательно"),
@@ -13,7 +14,6 @@ const userEditSchema = z.object({
     .optional()
     .refine(
       (val) => {
-        // If password is provided, validate it
         if (val && val.length > 0) {
           return (
             val.length >= 8 &&
@@ -22,7 +22,7 @@ const userEditSchema = z.object({
             /[0-9]/.test(val)
           );
         }
-        // If no password is provided (empty string), that's fine
+
         return true;
       },
       {
@@ -48,6 +48,7 @@ export const UserEditForm = ({
 }: UserEditFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [user, setUser] = useState<User>();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,12 +72,11 @@ export const UserEditForm = ({
     defaultValues: {
       name: user?.name,
       fio: user?.fio || "",
-      password: "", // Empty by default for editing
+      password: "",
       position: user?.position || "",
     },
   });
 
-  // Reset form when user changes
   useEffect(() => {
     reset({
       name: user?.name,
@@ -88,13 +88,11 @@ export const UserEditForm = ({
 
   const handleFormSubmit = async (data: UserEditFormValues) => {
     try {
-      // Create the update DTO with the user's ID and current data
       const updateDto: UserForUpdateDto = {
         id: id,
         name: data.name,
-        // If password is empty, use the existing password (or handle this on the server)
+
         password: data.password || user.password,
-        // Ensure fio is a string, not undefined
         fio: data.fio || "",
         position: data.position,
       };
@@ -211,11 +209,17 @@ export const UserEditForm = ({
           )}
         </div>
 
-        <div className="pt-2">
+        <div className="flex justify-between space-x-3">
+          <button
+            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500"
+            onClick={() => navigate(`/users`)}
+          >
+            Отмена
+          </button>
           <button
             type="submit"
             disabled={isSubmitting || isLoading}
-            className={`w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors 
+            className={`bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors 
               ${
                 isSubmitting || isLoading ? "opacity-70 cursor-not-allowed" : ""
               }`}

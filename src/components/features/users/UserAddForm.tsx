@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { UserForCreationDto } from "../../../types/user";
+import { useNavigate } from "react-router";
 
 const userSchema = z.object({
   name: z.string().min(1, "Обязательно"),
@@ -28,7 +29,7 @@ export const UserAddForm = ({
   isLoading = false,
 }: UserAddFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
-
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -155,11 +156,17 @@ export const UserAddForm = ({
           )}
         </div>
 
-        <div className="pt-2">
+        <div className="flex justify-between space-x-3">
+          <button
+            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500"
+            onClick={() => navigate(`/users`)}
+          >
+            Отмена
+          </button>
           <button
             type="submit"
             disabled={isSubmitting || isLoading}
-            className={`w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors 
+            className={` bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors 
               ${
                 isSubmitting || isLoading ? "opacity-70 cursor-not-allowed" : ""
               }`}
